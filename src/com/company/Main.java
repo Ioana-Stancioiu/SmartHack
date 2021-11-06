@@ -3,6 +3,7 @@ package com.company;
 import javax.crypto.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
 
 class Server {
@@ -25,22 +26,75 @@ class Server {
 }
 
 class Encrypt {
-    private static SecretKey GenerateAESKey(int nrBytes){
+    public static SecretKey GenerateAesKey(int nrBytes) throws NoSuchAlgorithmException{
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+        keyGenerator.init(nrBytes);
+        return keyGenerator.generateKey();
+    }
 
+    public static SecretKey Generate3DesKey() throws NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("DESede");
+        keyGenerator.init(112);
+        return keyGenerator.generateKey();
+    }
+
+    public static KeyPair GenerateRSAKeyPair() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance("RSA");
+        keyGenerator.initialize(2048);
+        return keyGenerator.generateKeyPair();
+    }
+
+    public static KeyPair GenerateECCKeyPair() throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance("EC");
+        keyGenerator.initialize(new ECGenParameterSpec("secp256r1"));
+        return keyGenerator.generateKeyPair();
+    }
+
+    public static String encryptRSA(String secretMessage, Cipher encryptCipher, PublicKey publicKey) {
+        String encryptedText = "";
+
+        try {
+            encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        byte[] secretMessageBytes = secretMessage.getBytes(StandardCharsets.UTF_8);
+        try {
+            byte[] encryptedMessageBytes = encryptCipher.doFinal(secretMessageBytes);
+            encryptedText = Base64.getEncoder().encodeToString(encryptedMessageBytes);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+        return encryptedText;
+    }
+
+    public static String decryptRSA(String encryptedPass, Cipher decryptCipher, PrivateKey privateKey) {
+        byte[] encryptedMessageBytes = Base64.getDecoder().decode(encryptedPass);
+
+        String decryptedMessage = "";
+        try {
+            byte[] decryptedMessageBytes;
+            decryptedMessageBytes = decryptCipher.doFinal(encryptedMessageBytes);
+            decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return decryptedMessage;
     }
 }
 
 class User {
-     Server server;
     private Application application;
 
     User() {
         application = new Application();
     }
 
-
-
+    public Application getApplication() {
+        return application;
+    }
 }
 
 class Application {
@@ -58,9 +112,7 @@ class Application {
         KeyPairGenerator generator = null;
 
         try {
-            generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(2048);
-            KeyPair pair = generator.generateKeyPair();
+            KeyPair pair = Encrypt.GenerateRSAKeyPair();
 
             this.privateKey = pair.getPrivate();
             this.publicKey = pair.getPublic();
@@ -76,38 +128,14 @@ class Application {
         }
     }
 
-    public String encrypt(String secretMessage) {
-        String encryptedText = "";
-        try {
-            encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-
-        byte[] secretMessageBytes = secretMessage.getBytes(StandardCharsets.UTF_8);
-        try {
-            byte[] encryptedMessageBytes = encryptCipher.doFinal(secretMessageBytes);
-            encryptedText = Base64.getEncoder().encodeToString(encryptedMessageBytes);
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
-        }
-        return encryptedText;
+    public String decryptMessage(String message) {
+        return Encrypt.decryptRSA(message, decryptCipher, privateKey);
     }
 
-    public String decrypt(String encryptedPass) {
-        byte[] encryptedMessageBytes = Base64.getDecoder().decode(encryptedPass);
-
-        String decryptedMessage = "";
-        try {
-            byte[] decryptedMessageBytes;
-            decryptedMessageBytes = decryptCipher.doFinal(encryptedMessageBytes);
-            decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
-        } catch (IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
-        }
-
-        return decryptedMessage;
+    public String encryptMessage(String message) {
+        return Encrypt.encryptRSA(message, encryptCipher, publicKey);
     }
+
 }
 
 public class Main {
@@ -117,14 +145,9 @@ public class Main {
         User user;
         user = new User();
 
-        String encryptedMessage = user.application.encrypt("Buna ziua");
+        String encryptedMessage = user.getApplication().encryptMessage("Buna ziua");
         System.out.println("Mesajul criptat este: " + encryptedMessage);
 
-        System.out.println("Mesajul decriptat: " + user.application.decrypt(encryptedMessage));
-
-
-
-
-
+        System.out.println("Mesajul decriptat: " + user.getApplication().decryptMessage(encryptedMessage));
     }
 }
