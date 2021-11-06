@@ -50,8 +50,10 @@ class Encrypt {
         return keyGenerator.generateKeyPair();
     }
 
-    public static String encryptRSA(String secretMessage, Cipher encryptCipher, PublicKey publicKey) {
+    public static String encryptRSA(String secretMessage, PublicKey publicKey) throws NoSuchPaddingException, NoSuchAlgorithmException {
         String encryptedText = "";
+        Cipher encryptCipher;
+        encryptCipher = Cipher.getInstance("RSA");
 
         try {
             encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -69,8 +71,16 @@ class Encrypt {
         return encryptedText;
     }
 
-    public static String decryptRSA(String encryptedPass, Cipher decryptCipher, PrivateKey privateKey) {
+    public static String decryptRSA(String encryptedPass, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException {
+        Cipher decryptCipher;
+        decryptCipher = Cipher.getInstance("RSA");
         byte[] encryptedMessageBytes = Base64.getDecoder().decode(encryptedPass);
+
+        try {
+            decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
 
         String decryptedMessage = "";
         try {
@@ -98,42 +108,44 @@ class User {
 }
 
 class Application {
-    Server server;
-
+    public Server server;
     // RSA public and private keys
     PublicKey publicKey;
     PrivateKey privateKey;
-
-    Cipher decryptCipher;
-    Cipher encryptCipher;
 
     Application() {
 
         KeyPairGenerator generator = null;
 
+        KeyPair pair = null;
         try {
-            KeyPair pair = Encrypt.GenerateRSAKeyPair();
-
+            pair = Encrypt.GenerateRSAKeyPair();
             this.privateKey = pair.getPrivate();
             this.publicKey = pair.getPublic();
-
-            decryptCipher = Cipher.getInstance("RSA");
-            encryptCipher = Cipher.getInstance("RSA");
-
-            this.decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
-            this.encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
-
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+
     }
 
     public String decryptMessage(String message) {
-        return Encrypt.decryptRSA(message, decryptCipher, privateKey);
+        try {
+            return Encrypt.decryptRSA(message, privateKey);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     public String encryptMessage(String message) {
-        return Encrypt.encryptRSA(message, encryptCipher, publicKey);
+        try {
+            return Encrypt.encryptRSA(message, publicKey);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
 }
