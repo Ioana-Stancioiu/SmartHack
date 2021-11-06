@@ -11,4 +11,7 @@ public class User {
         this.password = HashFunction.hashString(password);
     }
 
+    public String getUsername() {
+        return username;
+    }
 }
