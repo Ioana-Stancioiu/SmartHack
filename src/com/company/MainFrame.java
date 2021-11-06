@@ -7,6 +7,8 @@ public class MainFrame extends JFrame {
     private JTextField tf;
     private JTextField tf2;
     private JPanel mainPanel;
+    private JLabel usernameLabel;
+    private JLabel passwordLabel;
 
     public MainFrame() {
         setTitle("Manager de parole");
@@ -19,4 +21,5 @@ public class MainFrame extends JFrame {
     public static void main(String[] args) {
         MainFrame myFrame = new MainFrame();
     }
+
 }
