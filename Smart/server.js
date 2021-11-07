@@ -11,15 +11,17 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
+const CryptoJS = require('crypto-js')
 
 const initializePassport = require('./passport-config')
+const { enc } = require('crypto-js')
+
+const users = []
 initializePassport(
     passport, 
     email => users.find(user => user.email === email),
     id => users.find(user => user.id === id)
 )
-
-const users = []
 
 app.set('view-engine', 'ejs')
 app.use(urlencoded({ extended: false }))
@@ -89,5 +91,10 @@ function checkNotAuthenticated(req, res, next) {
 
     return next()
 }
+
+app.post('/buna', async (req, res) => {
+    var encrypted = CryptoJS.AES.encrypt(req.body.AES, "Secret Passphrase")
+    
+})
 
 app.listen(3000)
