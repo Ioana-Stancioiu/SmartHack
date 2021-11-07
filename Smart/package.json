@@ -17,7 +17,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "compile:sass": "sass --watch styles",
+    "compile:sass": "sass --watch public/styles",
     "devStart": "nodemon server.js"
   },
   "author": "",

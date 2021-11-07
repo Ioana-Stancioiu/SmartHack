@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="./styles/style.css">
-    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>Main page</title>
 </head>
 <body>
     <section class="vh-100">
@@ -14,38 +15,27 @@
           <h2 class="text-center">Please select your encryption</h2>
           <div class="row d-flex justify-content-center align-items-center h-25">
             <div class="col-md-6 text-center">
-            <form action="/buna" method="POST">
+            <form>
                 <div class="form-outline mb-4">
-                    <input type="text" id="AES" name="AES" class="form-control form-control-lg"
-                    placeholder="Enter message to encrypt"/>
-                    <button type="submit" class="btn btn-primary">AES</button>
+                    <input type="text" id="user" name="user" class="form-control form-control-lg"
+                    placeholder="Enter username"/>
+                    <input type="text" id="pass" name="pass" class="form-control form-control-lg my-2"
+                    placeholder="Enter password to encrypt"/>
+                    <button type="reset" id="AES-btn" class="crypt btn btn-primary">AES</button>
+                    <button type="reset" id="DES-btn" class="crypt btn btn-secondary">TripleDES</button>
+                    <button type="reset" id="RSA-btn" class="crypt btn btn-danger">RSA</button>
+                    <button type="reset" id="ECC-btn" class="crypt btn btn-success">ECC</button>
                 </div>
-            </form>
-            <form action="/buna" method="POST">
-                <div class="form-outline mb-4">
-                    <input type="text" id="DES" name="DES" class="form-control form-control-lg"
-                    placeholder="Enter message to encrypt"/>
-                    <button type="submit" class="btn btn-secondary">TripleDES</button>
-                </div>
-            </form>
-                
-            <form action="/buna" method="POST">
-                <div class="form-outline mb-4">
-                    <input type="text" id="RSA" name="RSA" class="form-control form-control-lg"
-                    placeholder="Enter message to encrypt"/>
-                    <button type="submit" class="btn btn-danger">RSA</button>
-                </div>
-            </form>
-            
-            <form action="/buna" method="POST">
-                <div class="form-outline mb-4">
-                    <input type="text" id="ECC" name="ECC" class="form-control form-control-lg"
-                    placeholder="Enter message to encrypt"/>
-                    <button type="submit" class="btn btn-success">ECC</button>
-                </div>
-            </form>    
+            </form>   
             </div>
-            <h2 class="text-center d-block">Encryption</h2>
+            <div class="parent">
+
+            </div>
+            <div class="text-center">
+                <form action="/logout?_method=DELETE" method="POST">
+                    <button type="submit" class="btn btn-secondary">Log Out</button>
+                </form>
+            </div>
           </div>
         </div>
         <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
@@ -56,4 +46,67 @@
         </div>
       </section>
 </body>
+<script>
+    let x = 1
+    $( ".crypt" ).click(function() {
+        let user = document.getElementById("user").value;
+        let pass = document.getElementById("pass").value;
+        $( ".parent" ).append(`
+        <div class="row d-flex justify-content-center text-center">
+                    <div class="col-md-4">
+                        <p id="username${x}" style="margin-right: 8rem;">Username: ${user} </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p id="password${x}" style="margin-right: 8rem;">Password:<i class="steluta${x}">*****</i><i class="d-none ${x}">${pass}</i></p>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-danger show${x}" id="show${x}" onclick="myFunction${x}()">Show Password</button>
+                    </div>
+                </div>
+        `)
+        x++;
+    });
+    
+    function myFunction1() {
+        $(".steluta1").addClass("d-none")
+        $(".1").removeClass("d-none")
+    };
+    function myFunction2() {
+        $(".steluta2").addClass("d-none")
+        $(".2").removeClass("d-none")
+    };
+    function myFunction3() {
+        $(".steluta3").addClass("d-none")
+        $(".3").removeClass("d-none")
+    };
+    function myFunction4() {
+        $(".steluta4").addClass("d-none")
+        $(".4").removeClass("d-none")
+    };
+    function myFunction5() {
+        $(".steluta5").addClass("d-none")
+        $(".5").removeClass("d-none")
+    };
+    function myFunction6() {
+        $(".steluta6").addClass("d-none")
+        $(".6").removeClass("d-none")
+    };
+    function myFunction7() {
+        $(".steluta7").addClass("d-none")
+        $(".7").removeClass("d-none")
+    };
+    function myFunction8() {
+        $(".steluta8").addClass("d-none")
+        $(".8").removeClass("d-none")
+    };
+    function myFunction9() {
+        $(".steluta9").addClass("d-none")
+        $(".9").removeClass("d-none")
+    };
+    function myFunction10() {
+        $(".steluta10").addClass("d-none")
+        $(".10").removeClass("d-none")
+    };
+    
+</script>
 </html>
